@@ -44,6 +44,7 @@ class SLURM:
         """
         script = "#!/bin/bash\n"
         script += "#SBATCH --job-name=%s\n" % job_name
+        script += "#SBATCH --ntasks=1\n"
         script += "#SBATCH --output=%s.out\n" % (abs_experiment_path + "_%A_%a")
         script += "#SBATCH --error=%s.err\n" % (abs_experiment_path + "_%A_%a")
         script += "#SBATCH --cpus-per-task=%d\n" % self.n_cpus
