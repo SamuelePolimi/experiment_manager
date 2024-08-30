@@ -1,0 +1,2 @@
+from experiment_manager.manager import Experiment
+from experiment_manager.slurm_configuration import SLURM
