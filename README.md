@@ -108,7 +108,7 @@ slurm = {
     "time": "10:00:00",
     "post_script": ["module load python/3.8", "module load conda"],
     "pre_script": ["conda deactivate idrl", "module unload conda", "module unload python/3.8"],
-    "python_runner": "runner.py"
+    "job_runner": "python runner.py"
 }
 
 slurm_config = SLURM(**slurm)
@@ -130,10 +130,7 @@ exp.save()
 At this point, we can create the SLURM scripts to run the jobs on the cluster.
 
 ```python
-exp.generate_slurm_script("python_script", # python runner program (see later)
-                          "job_name", # name of the job
-                          10, # number of jobs to run -- if not specified, it will be inferred from the number of jobs that pass the filter
-                          )
+exp.generate_slurm_script()
 ```
 
 The `generate_slurm_script` method generates a SLURM script that runs the python script `python_script.py` on the cluster. The script is generated in the folder `abs_folder_path/experiment_name/slurm_scripts.sh`.
@@ -141,7 +138,7 @@ The `generate_slurm_script` method generates a SLURM script that runs the python
 ## The python runner
 
 The python runner defined above (i.e., python_script) should be a python script that takes as input
-three parameters: --job_id, --experiment_path, --experiment_name. The script should load the job with the given job_id and run the job.
+three parameters: --job_id, --experiment-path, --experiment-name. The script should load the job with the given job_id and run the job.
 
 ```python
 import argparse

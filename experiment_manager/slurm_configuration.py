@@ -10,7 +10,7 @@ class SLURM:
                  n_cpus: int,
                  memory: str,
                  time: str,
-                 python_runner: str):
+                 job_runner: str):
 
         self.pre_script = pre_script
         self.post_script = post_script
@@ -18,7 +18,7 @@ class SLURM:
         self.n_cpus = n_cpus
         self.memory = memory
         self.time = time
-        self.python_runner = python_runner
+        self.job_runner = job_runner
 
     def save(self, filename: str):
         with open(filename, 'w') as f:
@@ -58,7 +58,7 @@ class SLURM:
             script += line + "\n"
 
         script += "\n"
-        script += "python -m " + self.python_runner + "--job-id $SLURM_ARRAY_TASK_ID" \
+        script += self.job_runner + "--job-id $SLURM_ARRAY_TASK_ID" \
                   + "--experiment-path " + abs_experiment_path \
                   + "--experiment-name " + job_name + "\n"
 

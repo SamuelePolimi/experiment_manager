@@ -142,8 +142,7 @@ class Experiment:
     def set_slurm_config(self, slurm_config: SLURM):
         self.slurm_config = slurm_config
 
-    def create_slurm_job_array_script(self, abs_python_file: str,
-                                      job_name: str = None,
+    def create_slurm_job_array_script(self, job_name: str = None,
                                       n_tasks: int = None,
                                       verbose=True):
         """ Create a slurm job array script for the experiment
@@ -163,7 +162,7 @@ class Experiment:
         if job_name is None:
             job_name = self.experiment_name
 
-        slurm_script = self.slurm_config.get_slurm_job_array_script(abs_python_file, job_name, n_tasks)
+        slurm_script = self.slurm_config.get_slurm_job_array_script(self._abs_path, job_name, n_tasks)
 
         if verbose:
             print(slurm_script)
