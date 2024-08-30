@@ -45,8 +45,8 @@ class SLURM:
         script = "#!/bin/bash\n"
         script += "#SBATCH --job-name=%s\n" % job_name
         script += "#SBATCH --ntasks=1\n"
-        script += "#SBATCH --output=%s.out\n" % (abs_experiment_path + "/_%a")
-        script += "#SBATCH --error=%s.err\n" % (abs_experiment_path + "/_%a")
+        script += "#SBATCH --output=%s.out\n" % (abs_experiment_path + "/%a")
+        script += "#SBATCH --error=%s.err\n" % (abs_experiment_path + "/%a")
         script += "#SBATCH --cpus-per-task=%d\n" % self.n_cpus
         script += "#SBATCH --gpus-per-task=%d\n" % self.n_gpus
         script += "#SBATCH --mem=%s\n" % self.memory
@@ -57,9 +57,10 @@ class SLURM:
         for line in self.pre_script:
             script += line + "\n"
 
+        abs_experiment_path_parent = os.path.dirname(abs_experiment_path)
         script += "\n"
         script += self.job_runner + " --job-id $SLURM_ARRAY_TASK_ID" \
-                  + " --experiment-path " + abs_experiment_path \
+                  + " --experiment-path " + abs_experiment_path_parent \
                   + " --experiment-name " + job_name + "\n"
 
         for line in self.post_script:
