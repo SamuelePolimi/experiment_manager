@@ -1,7 +1,15 @@
 from typing import List, Dict, Callable
 import json, os
-import numpy as np
-import torch
+import warnings
+
+try:
+    import numpy as np
+except ImportError:
+    warnings.warn("Numpy is not installed. Some functionalities may not work.")
+try:
+    import torch
+except ImportError:
+    warnings.warn("Pytorch is not installed. Some functionalities may not work.")
 
 from experiment_manager.slurm_configuration import SLURM
 
