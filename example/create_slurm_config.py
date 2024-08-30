@@ -8,8 +8,8 @@ slurm = {
     "n_cpus": 1,
     "memory": "1000",
     "time": "00:01:00",
-    "pre_script": ["module load python/3.10", "module load conda", "conda activate experiment_manager"],
-    "post_script": ["conda deactivate experiment_manager", "module unload conda", "module unload python/3.10"],
+    "pre_script": ["module load python/3.10", "module load Anaconda3/2023.03/python-3.11.0-numpy-conda-2023.03", "conda activate experiment_manager"],
+    "post_script": ["conda deactivate experiment_manager", "module unload Anaconda3/2023.03/python-3.11.0-numpy-conda-2023.03", "module unload python/3.10"],
     "job_runner": "python ../fake_runner.py"
 }
 
