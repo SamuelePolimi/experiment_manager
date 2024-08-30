@@ -160,6 +160,9 @@ class Experiment:
                 data = json.load(f)
             n_tasks = len(data["jobs"])
 
+        if job_name is None:
+            job_name = self.experiment_name
+
         slurm_script = self.slurm_config.get_slurm_job_array_script(abs_python_file, job_name, n_tasks)
 
         if verbose:

@@ -100,15 +100,18 @@ The first thing to do is to define the SLURM configuration. That can be done man
 
 ```python
 from experiment_manager import SLURM
+
 slurm = {
     "n_gpus": 1,
     "n_cpus": 1,
     "memory": "1000",
     "time": "10:00:00",
-    "module_load": ["module load python/3.8", "module load conda"],
-    "module_unload": ["conda deactivate idrl", "module unload conda", "module unload python/3.8"]
+    "post_script": ["module load python/3.8", "module load conda"],
+    "pre_script": ["conda deactivate idrl", "module unload conda", "module unload python/3.8"],
+    "python_runner": "runner.py"
 }
-slurm_config = SLURM(slurm)
+
+slurm_config = SLURM(**slurm)
 ```
 
 or by loading it from file
