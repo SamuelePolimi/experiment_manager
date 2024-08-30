@@ -44,8 +44,8 @@ class SLURM:
         """
         script = "#!/bin/bash\n"
         script += "#SBATCH --job-name=%s\n" % job_name
-        script += "#SBATCH --output=%s.out\n" % job_name
-        script += "#SBATCH --error=%s.err\n" % job_name
+        script += "#SBATCH --output=%s.out\n" % (abs_experiment_path + "_%A_%a")
+        script += "#SBATCH --error=%s.err\n" % (abs_experiment_path + "_%A_%a")
         script += "#SBATCH --cpus-per-task=%d\n" % self.n_cpus
         script += "#SBATCH --gpus-per-task=%d\n" % self.n_gpus
         script += "#SBATCH --mem=%s\n" % self.memory
