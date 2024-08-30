@@ -69,7 +69,7 @@ class Experiment:
         :return:
         """
 
-        with open(abs_folder + "/" + experiment_name + "/config.json", 'r') as f:
+        with open(abs_folder + "/config.json", 'r') as f:
             data = json.load(f)
         slurm_config = None
         # check if the slurm_config exists
