@@ -116,7 +116,7 @@ class Experiment:
         """
         # check if the pass_filter exists
         if not os.path.exists(self._abs_path + "/pass_filter.json"):
-            raise ValueError("The pass_filter.json file does not exist. Please run save_pass_filter first")
+            raise ValueError("The pass_filter.json file does not existin %s. Please run save_pass_filter first" % self._abs_path)
         # load the pass_filter
         with open(self._abs_path + "/pass_filter.json", 'r') as f:
             data = json.load(f)
