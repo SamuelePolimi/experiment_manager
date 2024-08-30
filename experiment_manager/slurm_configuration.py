@@ -57,9 +57,9 @@ class SLURM:
             script += line + "\n"
 
         script += "\n"
-        script += self.job_runner + "--job-id $SLURM_ARRAY_TASK_ID" \
-                  + "--experiment-path " + abs_experiment_path \
-                  + "--experiment-name " + job_name + "\n"
+        script += self.job_runner + " --job-id $SLURM_ARRAY_TASK_ID" \
+                  + " --experiment-path " + abs_experiment_path \
+                  + " --experiment-name " + job_name + "\n"
 
         for line in self.post_script:
             script += line + "\n"
