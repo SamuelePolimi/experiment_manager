@@ -1,0 +1,1 @@
+{"algorithm": "TD3", "seed": 1, "nn": [1, 10], "tau": 0.005}
