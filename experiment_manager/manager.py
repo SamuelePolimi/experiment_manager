@@ -1,6 +1,9 @@
+from __future__ import annotations
 from typing import List, Dict, Callable
 import json, os
 import warnings
+
+from experiment_manager.configuration import Configuration
 
 try:
     import numpy as np
@@ -12,6 +15,24 @@ except ImportError:
     warnings.warn("Pytorch is not installed. Some functionalities may not work.")
 
 from experiment_manager.slurm_configuration import SLURM
+
+
+class ExperimentData:
+
+    def __init__(self, experiment: Experiment, id: int, generate_default=False):
+        self.experiment = experiment
+        self.id = id
+        self.variables = self.experiment.jobs[id]["variables"]
+        self.configuration = Configuration(self.experiment.jobs[id]["run_config"], generate_default=generate_default)
+
+    def save_results(self, filename: str, saver: Callable, results, override=False):
+        self.experiment.save_results(self.id, filename, saver, results, override)
+
+    def __str__(self):
+        return """Experiment: %s 
+        id: %d
+        variables: %s
+        configuration: %s""" % (self.experiment.experiment_name, self.id, self.variables, self.configuration)
 
 
 class Experiment:
@@ -69,7 +90,7 @@ class Experiment:
         :return:
         """
 
-        with open(abs_folder + "/" + experiment_name  + "/config.json", 'r') as f:
+        with open(abs_folder + "/" + experiment_name + "/config.json", 'r') as f:
             data = json.load(f)
         slurm_config = None
         # check if the slurm_config exists
@@ -107,7 +128,7 @@ class Experiment:
         with open(self._abs_path + "/pass_filter.json", 'w') as f:
             json.dump({"jobs": allowed_ids}, f)
 
-    def run_id(self, id: int, runner: Callable):
+    def run_id(self, id: int, runner: Callable[[ExperimentData], None]):
         """
         Run the job with the given id
         :param ids:
@@ -124,7 +145,8 @@ class Experiment:
         allowed_ids = data["jobs"]
         # check if the id is in the allowed_ids
         if id in allowed_ids:
-            runner(id, self.jobs[id]["variables"], self.jobs[id]["run_config"])
+            experiment_data = ExperimentData(self, id)
+            runner(experiment_data)
         else:
             raise ValueError("The id is not in the list of allowed ids.")
 
@@ -180,13 +202,10 @@ class Experiment:
             f.write(slurm_script)
 
     def get_fake_runner(self):
-        def runner(job_id, variables, configuration):
+        def runner(experiment_data: ExperimentData):
             # run the job
-            print("Running job %d" % job_id)
-            print("Variables: %s" % variables)
-            print("Configuration: %s" % configuration)
-            self.save_results(job_id, "configuration.json", Experiment.json_saver, configuration, override=True)
-            print("Job %d done!" % job_id)
+            print(experiment_data)
+            experiment_data.save_results("results.json", Experiment.json_saver, experiment_data.configuration)
 
         return runner
 

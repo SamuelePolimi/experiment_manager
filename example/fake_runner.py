@@ -8,5 +8,5 @@ if __name__ == "__main__":
     parser.add_argument("--experiment-name", type=str)
     args = parser.parse_args()
 
-    exp = Experiment.load(args.experiment_name, args.experiment_path)
-    exp.run_id(args.job_id, exp.fake_runner)
+    exp = Experiment.load(args.experiment_path, args.experiment_name)
+    exp.run_id(args.job_id, exp.get_fake_runner())
