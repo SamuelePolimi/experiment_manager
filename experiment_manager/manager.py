@@ -22,20 +22,21 @@ from experiment_manager.slurm_configuration import SLURM
 
 class ExperimentData:
 
-    def __init__(self, experiment: Experiment, id: int, generate_default=False):
+    def __init__(self, experiment: Experiment, slurm_id: int, generate_default=False):
         self.experiment = experiment
-        self.id = id
-        self.variables = self.experiment.jobs[id]["variables"]
-        self.configuration = Configuration(self.experiment.jobs[id]["run_config"], generate_default=generate_default)
+        self.filtered_id = experiment.get_filtered_ids()[slurm_id]
+        self.job = self.experiment.jobs[self.filtered_id]
+        self.variables = self.job["variables"]
+        self.configuration = Configuration(self.job["run_config"], generate_default=generate_default)
 
     def save_results(self, filename: str, saver: Callable, results, override=False):
-        self.experiment.save_results(self.id, filename, saver, results, override)
+        self.experiment.save_results(self.filtered_id, filename, saver, results, override)
 
     def __str__(self):
         return """Experiment: %s 
         id: %d
         variables: %s
-        configuration: %s""" % (self.experiment.experiment_name, self.id, self.variables, self.configuration)
+        configuration: %s""" % (self.experiment.experiment_name, self.filtered_id, self.variables, self.configuration)
 
 
 class Experiment:
@@ -131,13 +132,7 @@ class Experiment:
         with open(self._abs_path + "/pass_filter.json", 'w') as f:
             json.dump({"jobs": allowed_ids}, f)
 
-    def run_id(self, id: int, runner: Callable[[ExperimentData], None]):
-        """
-        Run the job with the given id
-        :param ids:
-        :param runner:
-        :return:
-        """
+    def get_filtered_ids(self):
         # check if the pass_filter exists
         if not os.path.exists(self._abs_path + "/pass_filter.json"):
             raise ValueError("The pass_filter.json file does not exist in %s. Please run save_pass_filter first" %
@@ -146,6 +141,16 @@ class Experiment:
         with open(self._abs_path + "/pass_filter.json", 'r') as f:
             data = json.load(f)
         allowed_ids = data["jobs"]
+        return allowed_ids
+
+    def run_id(self, id: int, runner: Callable[[ExperimentData], None]):
+        """
+        Run the job with the given id
+        :param ids:
+        :param runner:
+        :return:
+        """
+        allowed_ids = self.get_filtered_ids()
         # check if the id is in the allowed_ids
         if id in allowed_ids:
             experiment_data = ExperimentData(self, id)
@@ -166,12 +171,29 @@ class Experiment:
         else:
             saver(self._abs_path + "/%d_%s" % (id, filename), results)
 
+    def get_results(self, id: int, filename: str, loader: Callable):
+        """
+        Load the results of the jobs from file
+        :param ids:
+        :param results:
+        :return:
+        """
+        return loader(self._abs_path + "/%d_%s" % (id, filename))
+
     def get_all_ids(self):
         """
         Get all the ids of the jobs
         :return:
         """
         return list(range(len(self.jobs)))
+
+    def are_all_results_present(self, filename: str):
+        """
+        Check if all the results are present
+        :param filename:
+        :return:
+        """
+        return all([os.path.exists(self._abs_path + "/%d_%s" % (id, filename)) for id in self.get_filtered_ids()])
 
     def set_slurm_config(self, slurm_config: SLURM):
         self.slurm_config = slurm_config
@@ -212,6 +234,8 @@ class Experiment:
 
         return runner
 
+    # Savers
+
     @staticmethod
     def json_saver(filename, data):
         with open(filename, 'w') as f:
@@ -224,3 +248,18 @@ class Experiment:
     @staticmethod
     def torch_saver(filename, data):
         torch.save(data, filename)
+
+    # Loaders
+
+    @staticmethod
+    def json_loader(filename):
+        with open(filename, 'r') as f:
+            return json.load(f)
+
+    @staticmethod
+    def numpy_loader(filename):
+        return np.load(filename)
+
+    @staticmethod
+    def torch_loader(filename):
+        return torch.load(filename)
