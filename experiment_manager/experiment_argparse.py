@@ -1,6 +1,8 @@
 import argparse
 from experiment_manager.manager import Experiment, ExperimentData
 
+# TODO: perhaps this should be a launcher
+
 
 def get_arguments():
     parser = argparse.ArgumentParser()

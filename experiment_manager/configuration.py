@@ -1,3 +1,5 @@
+# TODO: this could be configured as a tracer
+
 class Configuration(dict):
 
     def __init__(self, dictionary: dict, generate_default=False):

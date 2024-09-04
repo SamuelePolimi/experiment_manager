@@ -16,6 +16,9 @@ except ImportError:
 
 from experiment_manager.slurm_configuration import SLURM
 
+# TODO: write a way to make simple "fake experiments" to trace the configurations
+# TODO: and, perhaps, make a way to check on completeness and correctness of automatically generated configurations
+
 
 class ExperimentData:
 
