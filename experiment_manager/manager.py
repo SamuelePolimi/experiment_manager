@@ -24,7 +24,10 @@ class ExperimentData:
 
     def __init__(self, experiment: Experiment, slurm_id: int, generate_default=False):
         self.experiment = experiment
-        self.filtered_id = experiment.get_filtered_ids()[slurm_id]
+        if not generate_default:
+            self.filtered_id = experiment.get_filtered_ids()[slurm_id]
+        else:
+            self.filtered_id = slurm_id
         self.job = self.experiment.jobs[self.filtered_id]
         self.variables = self.job["variables"]
         self.configuration = Configuration(self.job["run_config"], generate_default=generate_default)
