@@ -24,6 +24,7 @@ class ExperimentData:
 
     def __init__(self, experiment: Experiment, slurm_id: int, generate_default=False):
         self.experiment = experiment
+        self.generate_default = generate_default
         if not generate_default:
             self.filtered_id = experiment.get_filtered_ids()[slurm_id]
         else:
@@ -33,7 +34,10 @@ class ExperimentData:
         self.configuration = Configuration(self.job["run_config"], generate_default=generate_default)
 
     def save_results(self, filename: str, saver: Callable, results, override=False):
-        self.experiment.save_results(self.filtered_id, filename, saver, results, override)
+        if not self.generate_default:
+            self.experiment.save_results(self.filtered_id, filename, saver, results, override)
+        else:
+            print("Save %d_%s -> %s" % (self.filtered_id, filename, results))
 
     def __str__(self):
         return """Experiment: %s 
